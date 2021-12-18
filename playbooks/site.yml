@@ -9,4 +9,24 @@
 
 - hosts: webservers
 - name: Webserver assignment
-  import_playbook: ../static-assignments/webservers.yml
+  import_playbook: ../static-assignments/webservers.
+  
+- name: Loadbalancers assignment
+       hosts: lb
+         - import_playbook: ../static-assignments/loadbalancers.yml
+        when: load_balancer_is_required 
+
+
+#- name: Include dynamic variables
+#  gather_facts: no # due to python interpreter /usr/bin/python absent
+#  hosts: all
+
+#- name: import the common playbook
+#  import_playbook: ../static-assignments/common.yml
+#  tags:
+#    - run
+
+#- name: include the env-vars playbook
+#  import_playbook: ../dynamic-assignments/env-vars.yml
+#  tags:
+#    - skip
