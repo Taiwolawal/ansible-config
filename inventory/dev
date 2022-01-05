@@ -1,3 +1,4 @@
+
 [db]
 172.31.1.102 ansible_ssh_user='ubuntu'
 
