@@ -1,6 +1,14 @@
  pipeline {
     agent any
 
+    environment {
+        ANSIBLE_CONFIG="${WORKSPACE}/deploy/ansible.cfg"
+    }
+
+    parameters {
+        string(name: 'inventory', defaultValue: 'dev',  description: 'This is the inventory file for the environment to deploy configuration')
+    }
+
     stages {
         stage("Initial cleanup") {
             steps {
@@ -10,42 +18,31 @@
             }
         }
 
-        stage('Build') {
+        stage('Checkout SCM') {
             steps {
-                script {
-                    sh 'echo "Building Stage"'
-                }
-            }   
-        }
-
-        stage('Test') {
-            steps {
-                script {
-                    sh 'echo "Testing Stage"'
-                }
-            }   
-        }
-
-        stage('Package') {
-             steps {
-                script {
-                    sh 'echo "Packaging App"'
-                }
+                git branch: 'feature/jenkinspipeline-stages', url: 'https://github.com/Taiwolawal/ansible-config.git'
             }
         }
 
-        stage('Deploy') {
+        stage('Prepare Ansible For Execution') {
             steps {
-                script {
-                sh 'echo "Deploying to Dev"'
-                }
+                sh 'echo ${WORKSPACE}' 
+                sh 'sed -i "3 a roles_path=${WORKSPACE}/roles" ${WORKSPACE}/deploy/ansible.cfg'  
+                sh 'export ANSIBLE_CONFIG=${WORKSPACE}/deploy/ansible.cfg'
             }
         }
 
-        stage("clean up"){
+       stage('Run Ansible playbook') {
             steps {
-                cleanWs()
+                ansiblePlaybook become: true, colorized: true, credentialsId: 'private-key', disableHostKeyChecking: true, installation: 'ansible', inventory: '${WORKSPACE}/inventory/${inventory}', playbook: 'playbooks/site.yml'
             }
-        }   
+       }
+
+      stage('Clean Workspace after build'){
+            steps {
+                cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenUnstable: true, deleteDirs: true)
+            }
+       }
+        
     }
 }

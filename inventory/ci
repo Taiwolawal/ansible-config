@@ -4,6 +4,9 @@
 [nginx]
 <Nginx-Private-IP-Address>
 
+[test]
+<Nginx-Private-IP-Address>
+
 [sonarqube]
 <SonarQube-Private-IP-Address>
 
