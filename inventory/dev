@@ -4,3 +4,6 @@
 [nginx]
 172.31.5.59 ansible_ssh_user='ec2-user'
 
+[todo]
+172.31.5.252 ansible_ssh_user='ec2-user'
+
